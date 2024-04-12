@@ -45,7 +45,6 @@ function editDistance(s1, s2) {
 
 function parseFreetext(text) {
     return text.trim().replace("<P>", "").replace("</P>", "");
-
 }
 
 fetch("https://app.quizalize.com/ql/apollo", {
@@ -77,7 +76,7 @@ fetch("https://app.quizalize.com/ql/apollo", {
         let max_similarity = 0;
         let max_question = "";
         questions.forEach((question) => {
-            sim = similarity(questionTe, question["question"]);
+            sim = similarity(questionTe, parseFreetext(question.question));
             if (sim > max_similarity) {
                 max_similarity = sim;
                 max_question = question;
@@ -85,11 +84,11 @@ fetch("https://app.quizalize.com/ql/apollo", {
         });
 
         // const answer = max_question["answer"].replace("freetext://", "").replace("<P>", "").replace("</P>", "");
-        if (max_question["answer"].includes("freetext://")) {
-            answer = parseFreetext(max_question["answer"].replace("freetext://", ""));
+        if (max_question.answer.includes("freetext://")) {
+            answer = parseFreetext(max_question.answer.replace("freetext://", ""));
         //} else if ("freetextm://" in max_question["answer"]) {
-        } else if (max_question["answer"].includes("freetextm://")) {
-            answers = max_question["answer"].replace("freetextm://", "").split(" : ");
+        } else if (max_question.answer.includes("freetextm://")) {
+            answers = max_question.answer.replace("freetextm://", "").split(" : ");
             answer = parseFreetext(answers[Math.floor(Math.random() * answers.length)]);
         }
 
