@@ -65,14 +65,9 @@ fetch("https://app.quizalize.com/ql/apollo", {
         if (document.getElementsByClassName("CamxkuikD8Jtm6wCwTk21").length == 0) {
             return;
         }
-    
-        const questionTe = document.getElementsByClassName("CamxkuikD8Jtm6wCwTk21")[0].children[0].innerText;
-        const responeEl = document.getElementsByClassName("_2dj-BbvpndYIEn2OVvgLks")[0];
 
-        if (!responeEl) {
-            return;
-        }
-    
+        const questionTe = document.getElementsByClassName("CamxkuikD8Jtm6wCwTk21")[0].children[0].innerText;
+
         let max_similarity = 0;
         let max_question = "";
         questions.forEach((question) => {
@@ -85,22 +80,43 @@ fetch("https://app.quizalize.com/ql/apollo", {
 
         // const answer = max_question["answer"].replace("freetext://", "").replace("<P>", "").replace("</P>", "");
         if (max_question.answer.includes("freetext://")) {
-            answer = parseFreetext(max_question.answer.replace("freetext://", ""));
-        //} else if ("freetextm://" in max_question["answer"]) {
-        } else if (max_question.answer.includes("freetextm://")) {
-            answers = max_question.answer.replace("freetextm://", "").split(" : ");
-            answer = parseFreetext(answers[Math.floor(Math.random() * answers.length)]);
-        }
+            const responseEl = document.getElementsByClassName("_2dj-BbvpndYIEn2OVvgLks")[0];
+            if (!responseEl) return;
 
-        responeEl.children[0].value = answer;
-    
-        setTimeout(() => {
-            responeEl.children[1].click();
-
+            const answer = parseFreetext(max_question.answer.replace("freetext://", ""));
+            responseEl.children[0].value = answer;
             setTimeout(() => {
-                const next = document.getElementsByClassName("_2PSgLZCXVR-nlobGH6VlHf")[0];
-                next.click();
+                responseEl.children[1].click();
+
+                setTimeout(() => {
+                    const next = document.getElementsByClassName("_2PSgLZCXVR-nlobGH6VlHf")[0];
+                    next.click();
+                }, 100);
             }, 100);
-        }, 100);
+        } else if (max_question.answer.includes("freetextm://")) {
+            const responseEl = document.getElementsByClassName("_2dj-BbvpndYIEn2OVvgLks")[0];
+            if (!responseEl) return;
+
+            const answers = max_question.answer.replace("freetextm://", "").split(" : ");
+            const answer = parseFreetext(answers[Math.floor(Math.random() * answers.length)]);
+            responseEl.children[0].value = answer;
+            setTimeout(() => {
+                responseEl.children[1].click();
+
+                setTimeout(() => {
+                    const next = document.getElementsByClassName("_2PSgLZCXVR-nlobGH6VlHf")[0];
+                    next.click();
+                }, 100);
+            }, 100);
+        } else if (max_question.answer.includes("boolean://")) {
+            const trueButton = document.getElementsByClassName("_3aJB-gdaRIp1HKjV7Nj92F")[0];
+            const falseButton = document.getElementsByClassName("_3aJB-gdaRIp1HKjV7Nj92F")[1];
+            if (!trueButton || !falseButton) return;
+
+            const answer = max_question.answer.replace("boolean://", "") == "True";
+            setTimeout(() => {
+                (answer ? trueButton : falseButton).click(); 
+            }, 100);
+        }
     }, 250);
 });
